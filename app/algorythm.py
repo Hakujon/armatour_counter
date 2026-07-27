@@ -5,7 +5,7 @@ from app.schemas import CuttedBar, BaseWorkpiece, ReadyPattern, Response
 from pprint import pprint
 
 
-def solve_subproblem(shadow_prices: list, lengths: list, max_whip: int):
+def _solve_subproblem(shadow_prices: list, lengths: list, max_whip: int):
     model = cp_model.CpModel()
     num_items = len(lengths)
 
@@ -33,7 +33,7 @@ def solve_subproblem(shadow_prices: list, lengths: list, max_whip: int):
     return None, 0
 
 
-def gilmore_gomori_cutting_stock(demands: list[tuple[int, int]], max_whip: int):
+def _run_cutting_stock_optimization(demands: list[tuple[int, int]], max_whip: int):
 
     lengths = [detail[0] for detail in demands]
     quantities = [detail[1] for detail in demands]
@@ -71,7 +71,7 @@ def gilmore_gomori_cutting_stock(demands: list[tuple[int, int]], max_whip: int):
 
         shadow_prices = [constraints[i].dual_value() for i in range(num_items)]
 
-        new_pattern, pattern_worth = solve_subproblem(
+        new_pattern, pattern_worth = _solve_subproblem(
             shadow_prices=shadow_prices,
             lengths=lengths,
             max_whip=max_whip)
@@ -115,6 +115,21 @@ def gilmore_gomori_cutting_stock(demands: list[tuple[int, int]], max_whip: int):
 
     pprint(ready_patterns, compact=True)
     return Response(patterns=ready_patterns, total_whips=total_whips)
+
+
+def gilmore_gomori_cutting_stock(demands: list[tuple[int, int]], max_whip: int):
+    if not demands:
+        raise ValueError("Demands list cannot be empty")
+
+    for length, quantity in demands:
+        if length <= 0 or quantity <= 0:
+            raise ValueError("Length and quantity must be positive")
+        if length < 50:
+            raise ValueError("Длина заготовки должна быть не менее 50 мм")
+        if length > max_whip:
+            raise ValueError(f"Длина заготовки ({length} мм) превышает длину хлыста ({max_whip} мм)")
+
+    return _run_cutting_stock_optimization(demands, max_whip)
 
 
 if __name__ == "__main__":
