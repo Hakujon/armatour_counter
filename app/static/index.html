@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расчёт раскроя арматуры</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1>Калькулятор раскроя арматуры</h1>
+            <p class="subtitle">Оптимизация раскроя методом Гилмора-Гомори</p>
+        </header>
+
+        <main class="app-main">
+            <section class="card input-section">
+                <h2>Параметры раскроя</h2>
+                
+                <div class="form-group inline-group">
+                    <label for="maxLength">Длина хлыста (мм):</label>
+                    <input type="number" id="maxLength" value="11700" min="1" step="1" required>
+                    <span class="help-text">(стандарт 11700 мм = 11.7 м)</span>
+                </div>
+
+                <div class="table-container">
+                    <h3>Список заготовок</h3>
+                    <table class="data-table" id="workpiecesTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">№</th>
+                                <th style="width: 45%;">Длина заготовки (мм)</th>
+                                <th style="width: 35%;">Количество (шт)</th>
+                                <th style="width: 10%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="workpiecesBody">
+                            <!-- Строки добавляются динамически -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="button-bar">
+                    <button type="button" class="btn btn-secondary" id="addRowBtn">+ Добавить заготовку</button>
+                    <button type="button" class="btn btn-outline" id="loadExampleBtn">Заполнить пример</button>
+                    <button type="button" class="btn btn-danger-outline" id="clearBtn">Очистить</button>
+                </div>
+
+                <div class="submit-bar">
+                    <button type="button" class="btn btn-primary btn-large" id="calculateBtn">
+                        <span id="btnText">Рассчитать раскрой</span>
+                        <span id="btnSpinner" class="spinner hidden"></span>
+                    </button>
+                </div>
+                <div id="errorMessage" class="error-banner hidden"></div>
+            </section>
+
+            <section id="resultsSection" class="results-section hidden">
+                <div class="card">
+                    <div class="results-header">
+                        <h2>Результаты расчёта</h2>
+                        <button type="button" class="btn btn-outline print-btn" onclick="window.print()">🖨️ Печать / PDF</button>
+                    </div>
+
+                    <!-- Сводные показатели -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-label">Всего хлыстов</span>
+                            <span class="stat-value" id="statTotalWhips">0 шт</span>
+                            <span class="stat-sub" id="statTotalStockMeters">0 м</span>
+                        </div>
+                        <div class="stat-card success">
+                            <span class="stat-label">Полезный расход</span>
+                            <span class="stat-value" id="statUsedLength">0 м</span>
+                            <span class="stat-sub" id="statUsedPercent">0%</span>
+                        </div>
+                        <div class="stat-card warning">
+                            <span class="stat-label">Общие отходы</span>
+                            <span class="stat-value" id="statWasteLength">0 м</span>
+                            <span class="stat-sub" id="statWastePercent">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Карта раскроя (Таблица шаблонов) -->
+                    <h3>Карта раскроя (Шаблоны)</h3>
+                    <div class="table-container">
+                        <table class="data-table results-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 8%;">№</th>
+                                    <th style="width: 15%;">Кол-во хлыстов</th>
+                                    <th style="width: 42%;">Состав раскроя 1 хлыста</th>
+                                    <th style="width: 15%;">Использовано</th>
+                                    <th style="width: 10%;">Отход</th>
+                                    <th style="width: 10%;">КИН (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patternsTableBody">
+                                <!-- Шаблоны добавляются через JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Сверка количества заготовок -->
+                    <h3 style="margin-top: 2rem;">Сводка по требуемым детализациям</h3>
+                    <div class="table-container">
+                        <table class="data-table summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Длина заготовки (мм)</th>
+                                    <th>Требуемое количество (шт)</th>
+                                    <th>Раскроено (шт)</th>
+                                    <th>Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody id="summaryTableBody">
+                                <!-- Сводка добавляется через JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
